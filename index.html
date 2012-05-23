@@ -7,7 +7,7 @@
 	</head>
 	<body>
 
-		<input type="button" disabled="true" onclick="start()" value="play" id="btn-play" />
+		<input type="button" onclick="start();" value="play" id="btn-play" />
 
 		<button onclick="stop()">
 			stop
@@ -15,7 +15,7 @@
 
 		<script type="text/javascript">
 			var context = new webkitAudioContext(), afterBuffer = null, afterSource = null;
-			$(function() {
+		/*	$(function() {
 				var xhr = new XMLHttpRequest();
 				xhr.open("GET", "music/after.mp3", true);
 				xhr.responseType = 'arraybuffer';
@@ -28,8 +28,22 @@
 
 				};
 				xhr.send();
-			});
-			function start() {
+			}); */
+            function start() {
+                var freq = 440,
+                    ab = context.createBuffer(1, 44100, 44100),
+                    buf = ab.getChannelData(0);
+                $.log(ab);
+                $.log(buf.length);
+                for(var i = 0; i<44100; i++){
+                    buf[i] = Math.sin( freq * 2 * Math.PI * i / 44100);
+                }
+                afterSource = context.createBufferSource();
+                afterSource.buffer = ab;
+                afterSource.connect(context.destination);
+                afterSource.noteOn(0);
+            }
+			function _start() {
 				var jN = context.createJavaScriptNode(16384);
 				afterSource = context.createBufferSource();
 				afterSource.buffer = afterBuffer;
