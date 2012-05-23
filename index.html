@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>JavaScript Audio Write Example</title>
+		<script type="text/javascript" src="jquery-1.7.2.js"></script>
+		<script type="text/javascript" src="js-printf.js"></script>
+	</head>
+	<body>
+
+		<input type="button" disabled="true" onclick="start()" value="play" id="btn-play" />
+
+		<button onclick="stop()">
+			stop
+		</button>
+
+		<script type="text/javascript">
+			var context = new webkitAudioContext(), afterBuffer = null, afterSource = null;
+			$(function() {
+				var xhr = new XMLHttpRequest();
+				xhr.open("GET", "music/after.mp3", true);
+				xhr.responseType = 'arraybuffer';
+				xhr.onload = function(e) {
+					context.decodeAudioData(xhr.response, function(buffer) {
+						afterBuffer = buffer;
+						$("#btn-play").attr("disabled", false);
+						$.log(buffer.length);
+					}, null);
+
+				};
+				xhr.send();
+			});
+			function start() {
+				var jN = context.createJavaScriptNode(16384);
+				afterSource = context.createBufferSource();
+				afterSource.buffer = afterBuffer;
+				afterSource.connect(jN);
+				jN.onaudioprocess = function(e) {
+					//$.log("process")
+					var lOut = e.outputBuffer.getChannelData(0);
+					var rOut = e.outputBuffer.getChannelData(1);
+					var lIn = e.inputBuffer.getChannelData(0);
+					var rIn = e.inputBuffer.getChannelData(1);
+					for(var i = 0; i < this.bufferSize; i++) {
+						lOut[i] = lIn[i];
+						rOut[i] = rIn[i];
+					}
+
+				};
+				jN.connect(context.destination);
+				afterSource.noteOn(0);
+			}
+
+			function stop() {
+				afterSource.noteOff(0);
+			}
+		</script>
+	</body>
+</html>
