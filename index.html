@@ -14,38 +14,7 @@
 			stop
 		</button>
 
-		<script type="text/javascript">
-		
-            function start() {
-                afterSource = context.createBufferSource();
-                afterSource.buffer = ab;
-                afterSource.connect(context.destination);
-                afterSource.noteOn(0);
-            }
-			function _start() {
-				var jN = context.createJavaScriptNode(16384);
-				afterSource = context.createBufferSource();
-				afterSource.buffer = afterBuffer;
-				afterSource.connect(jN);
-				jN.onaudioprocess = function(e) {
-					//$.log("process")
-					var lOut = e.outputBuffer.getChannelData(0);
-					var rOut = e.outputBuffer.getChannelData(1);
-					var lIn = e.inputBuffer.getChannelData(0);
-					var rIn = e.inputBuffer.getChannelData(1);
-					for(var i = 0; i < this.bufferSize; i++) {
-						lOut[i] = lIn[i];
-						rOut[i] = rIn[i];
-					}
-
-				};
-				jN.connect(context.destination);
-				afterSource.noteOn(0);
-			}
-
-			function stop() {
-				afterSource.noteOff(0);
-			}
-		</script>
+        <br/>
+        <a href="http://localhost:8080/Aptana3/canon/canon.html">Canon</a>
 	</body>
 </html>
