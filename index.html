@@ -15,30 +15,8 @@
 		</button>
 
 		<script type="text/javascript">
-			var context = new webkitAudioContext(), afterBuffer = null, afterSource = null;
-		/*	$(function() {
-				var xhr = new XMLHttpRequest();
-				xhr.open("GET", "music/after.mp3", true);
-				xhr.responseType = 'arraybuffer';
-				xhr.onload = function(e) {
-					context.decodeAudioData(xhr.response, function(buffer) {
-						afterBuffer = buffer;
-						$("#btn-play").attr("disabled", false);
-						$.log(buffer.length);
-					}, null);
-
-				};
-				xhr.send();
-			}); */
+		
             function start() {
-                var freq = 440,
-                    ab = context.createBuffer(1, 44100, 44100),
-                    buf = ab.getChannelData(0);
-                $.log(ab);
-                $.log(buf.length);
-                for(var i = 0; i<44100; i++){
-                    buf[i] = Math.sin( freq * 2 * Math.PI * i / 44100);
-                }
                 afterSource = context.createBufferSource();
                 afterSource.buffer = ab;
                 afterSource.connect(context.destination);

@@ -56,7 +56,7 @@ function _createMod(t) {
 
 function _createNote(m, idx, t) {
 	var arr = new Float32Array(t), size = t.length;
-	_mul(arr, _st[idx], size);
+	_mul(arr, _st[idx-1], size);
 	_cos(arr, size);
 	_dotMul(arr, m, size);
 	return arr;
@@ -80,20 +80,25 @@ function _linkArray(a1, a2/*,a3...*/) {
 }
 
 function _createS(c1,v1,v2,v3){
-	var m_size = Math.min(c1.length,v1.length,v2.length,v3.length),
-		arr = new Float32Array(m_size);
+	var m_size = Math.min(c1.length,v1.length,v2.length,v3.length);
+	ab = context.createBuffer(1, m_size, fs),
+	buf = ab.getChannelData(0);
 	var max_s = 0;
+	
 	for(var i=0;i<m_size;i++){
 		var s = c1[i]+v1[i]+v2[i]+v3[i];
 		if(s>max_s)
 			max_s = s;
-		arr[i] = s;
+		buf[i] = s;
  	}
-	return {
-		arr : arr,
-		max : max_s
-	}
+	
+	_div(buf, max_s, m_size);
+	
+	$.log(buf[1]);
 }
+
+context = new webkitAudioContext(), ab = null, buf = null;
+
 fs = 44100;
 dt = 1 / fs;
 
@@ -117,10 +122,10 @@ f0 = 2 * 146.8;
 
 _st = new Float32Array([2 / 3, 3 / 4, 5 / 6, 15 / 16, 1, 9 / 8, 5 / 4, 4 / 3, 3 / 2, 5 / 3, 9 / 5, 15 / 8, 2, 9 / 4, 5 / 2, 8 / 3, 3, 10 / 3, 15 / 4, 4, 1 / 2, 9 / 16, 5 / 8]);
 
-for(var x = 0; x < _st.length; x++) {
-	_st[i] *= Math.PI * 2 * f0;
-}
 
+for(var x = 0; x < _st.length; x++) {
+	_st[x] *= (Math.PI * 2 * f0);
+}
 
 do0f = _createNote(mod4, 21, t4);
 re0f = _createNote(mod4, 22, t4);
@@ -216,10 +221,5 @@ v2 = _linkArray(blkblock,blkblock,violin,blkblock);
 v3 = _linkArray(blkblock,blkblock,blkblock,violin);
 
 // Get dirty
-s_m = _createS(c1,v1,v2,v3);
+_createS(c1,v1,v2,v3);
 
-s = s_m.arr;
-
-_div(s, s_m.max, s.length);
-
-$.log(s(1))

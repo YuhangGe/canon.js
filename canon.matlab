@@ -174,7 +174,7 @@ v3 = [blkblock blkblock blkblock violin];
 
 
 % Get dirty
-s = c1+v1+v2+v3;
-s = s/max(s);
+s1 = c1+v1+v2+v3;
+s = s1/max(s1);
 
 sound(s,fs); 
