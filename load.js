@@ -1,0 +1,90 @@
+function Load(){
+	this.src = "";
+	this.idx = 0;
+	this.out = {
+		width : 0,
+		height : 0,
+		polys : []
+	};
+}
+Load.prototype = {
+	getOutline : function(data){
+		this.src = data;
+		this.idx = 0;
+		this._min_x = 99999;
+		this._min_y = 99999;
+		this.out ={
+			width : this._read() + 4,
+			height : this._read() + 4,
+			polys : []
+		};
+		
+		var p_size = this._read();
+		for(var i=0;i<p_size;i++){
+			this.out.polys.push(this._getEachPoly());
+		}
+		/*
+		 * 对点阵座标进行调整以适应坐标系。
+		 */
+		for(var i=0;i<p_size;i++){
+			var p = this.out.polys[i];
+			p.start.x -= this._min_x - 2;
+			p.start.y = this.out.height - p.start.y + this._min_y + 2;
+			for(var j=0;j<p.lines.length;j++){
+				var l = p.lines[j];
+				for(var u=0;u<l.points.length;u++){
+					l.points[u].x -= this._min_x - 2;
+					l.points[u].y = this.out.height - l.points[u].y + this._min_y + 2;
+				}
+			}
+		}
+		return this.out;
+	},
+	_getEachPoly : function(){
+		var poly = {
+			start : {
+				x : this._readX(),
+				y : this._readY()
+			},
+			lines : []
+		};
+		var line_size = this._read();
+		for(var i=0;i<line_size;i++){
+			poly.lines.push(this._getEachLine());
+		}
+		return poly;
+	},
+	_getEachLine : function(){
+		var t = this._read(), point_size = this._read();
+		var line = {
+			type : t===1 ? 'line' : 'bezier',
+			points : []
+		};
+		for(var i=0;i<point_size;i++){
+			line.points.push({
+				x : this._readX(),
+				y : this._readY()
+			})
+		}
+		return line;
+	},
+	_read : function(){
+		return this.src.charCodeAt(this.idx++);
+	},
+	_readX : function(){
+		var x = this._readF();
+		if(x<this._min_x)
+			this._min_x = x;
+		return x;
+	},
+	_readY : function(){
+		var y = this._readF();
+		if(y<this._min_y)
+			this._min_y = y;
+		return y;
+	},
+	_readF : function(){
+		var v = this.src.charCodeAt(this.idx++), f = this.src.charCodeAt(this.idx++);
+		return ((v & 0x8000)===0?v:(v-0x10000)) + f/0xffff;
+	}
+}

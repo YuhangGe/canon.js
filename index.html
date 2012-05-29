@@ -4,17 +4,55 @@
 		<title>JavaScript Audio Write Example</title>
 		<script type="text/javascript" src="jquery-1.7.2.js"></script>
 		<script type="text/javascript" src="js-printf.js"></script>
-		<script type="text/javascript" src="canon.js"></script>
+		
+		<script type="text/javascript" src="load.js"></script>
+		<script type="text/javascript" src="index.js"></script>
+		<script type="text/javascript">
+			var cvs = null, ctx = null, outline = null;
+			
+			$(function(){
+				cvs = document.getElementById('c-test'), ctx = cvs.getContext("2d");
+				cvs.width = 500;
+				cvs.height = 400;
+				$.get("node/r.out.txt",function(data){
+					outline = new Load().getOutline(data);
+					$.log("load outline");
+				});
+			})
+			
+			function doTest(){
+				cvs.width = outline.width;
+				cvs.height = outline.height;
+				drawOutline(outline, ctx);
+			}
+		</script>
+		<style type="text/css">
+			* {
+				padding: 0px;
+				margin: 0px;
+			}
+			body{
+				padding-left: 10px;
+			}
+			#c-test{
+				
+			}
+			#title{
+				font-size: 100px;
+				font-family: "MusetteMusic4b";
+				padding: 0px;
+				margin: 0px;
+			}
+		</style>
 	</head>
 	<body>
-
-		<input type="button" onclick="start();" value="play" id="btn-play" />
-
-		<button onclick="stop()">
-			stop
-		</button>
-
-        <br/>
-        <a href="http://localhost:8080/Aptana3/canon/canon.html">Canon</a>
+		<div id="title">
+			<span>a</span><span>b</span><span>R</span>
+		</div>
+		<canvas id="c-test"></canvas>
+		<div>
+			<input type="button" value="draw" onclick="doTest();" />
+		</div>
+        
 	</body>
 </html>
