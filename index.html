@@ -8,22 +8,30 @@
 		<script type="text/javascript" src="load.js"></script>
 		<script type="text/javascript" src="index.js"></script>
 		<script type="text/javascript">
-			var cvs = null, ctx = null, outline = null;
+			var cvs = null, ctx = null, outlines = null, loader = new Load();
 			
 			$(function(){
 				cvs = document.getElementById('c-test'), ctx = cvs.getContext("2d");
-				cvs.width = 500;
-				cvs.height = 400;
-				$.get("node/r.out.txt",function(data){
-					outline = new Load().getOutline(data);
-					$.log("load outline");
+				cvs.width = 1850;
+				cvs.height = 225;
+				$.get("node/export.out.txt",function(data){
+					outlines = loader.getOutline(data);
+					$.log("load outlines");
 				});
 			})
 			
+			function draw(idx, offset){
+				offset = offset?offset:0;
+				var out = outlines[idx];
+				drawOutline(out, ctx, offset);
+			}
 			function doTest(){
-				cvs.width = outline.width;
-				cvs.height = outline.height;
-				drawOutline(outline, ctx);
+				var left = 0;
+				for(var i=0;i<outlines.length;i++){
+					var o = outlines[i];
+					drawOutline(o, ctx, left);
+					left += o.width;
+				}
 			}
 		</script>
 		<style type="text/css">
@@ -35,7 +43,7 @@
 				padding-left: 10px;
 			}
 			#c-test{
-				
+				border: 1px dashed blue;
 			}
 			#title{
 				font-size: 100px;
@@ -49,6 +57,7 @@
 		<div id="title">
 			<span>a</span><span>b</span><span>R</span>
 		</div>
+		<div style="font:100px MusetteMusic4b;position:absolute;left: 300px;top:500px;">R</div>
 		<canvas id="c-test"></canvas>
 		<div>
 			<input type="button" value="draw" onclick="doTest();" />

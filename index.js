@@ -1,9 +1,9 @@
-function drawOutline(out, ctx) {
+function drawOutline(out, ctx, offset) {
 	ctx.strokeStyle = "blue";
 	ctx.fillStyle = "blue";
 	ctx.save();
 	ctx.globalCompositeOperation = 'xor';
-	//ctx.rotate(Math.PI);
+	ctx.translate(offset,0);
 	for(var i = 0; i < out.polys.length; i++) {
 		drawPoly(out.polys[i], ctx);
 	}

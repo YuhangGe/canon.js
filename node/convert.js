@@ -1,5 +1,5 @@
 (function(){
-	var fs = require("fs"), FN = "a";
+	var fs = require("fs"), FN = "export";
 	
 	var d = fs.readFileSync(FN+".txt").toString(), src = d.split(","), idx = 0, dst = "";
 	

@@ -1,44 +1,51 @@
 function Load(){
 	this.src = "";
 	this.idx = 0;
-	this.out = {
-		width : 0,
-		height : 0,
-		polys : []
-	};
 }
 Load.prototype = {
 	getOutline : function(data){
 		this.src = data;
 		this.idx = 0;
-		this._min_x = 99999;
-		this._min_y = 99999;
-		this.out ={
-			width : this._read() + 4,
-			height : this._read() + 4,
+		
+		var c_size = this._read();
+		$.log(c_size)
+		var outlines = [];
+		for(var i=0;i<c_size;i++){
+			outlines.push(this._getEachOutline());
+		}
+		return outlines;
+	},
+	_getEachOutline : function(){
+		this._min_x = this._min_y = 99999;
+
+		var out ={
+			width : this._read(),
+			height : this._read(),
 			polys : []
 		};
 		
 		var p_size = this._read();
 		for(var i=0;i<p_size;i++){
-			this.out.polys.push(this._getEachPoly());
+			out.polys.push(this._getEachPoly());
 		}
 		/*
-		 * 对点阵座标进行调整以适应坐标系。
+		 * 对点阵座标进行调整以适应坐标系。+2 和 +4是为了给左右和上下各加2px的padding
 		 */
 		for(var i=0;i<p_size;i++){
-			var p = this.out.polys[i];
+			var p = out.polys[i];
 			p.start.x -= this._min_x - 2;
-			p.start.y = this.out.height - p.start.y + this._min_y + 2;
+			p.start.y = out.height - p.start.y + this._min_y + 2;
 			for(var j=0;j<p.lines.length;j++){
 				var l = p.lines[j];
 				for(var u=0;u<l.points.length;u++){
 					l.points[u].x -= this._min_x - 2;
-					l.points[u].y = this.out.height - l.points[u].y + this._min_y + 2;
+					l.points[u].y = out.height - l.points[u].y + this._min_y + 2;
 				}
 			}
 		}
-		return this.out;
+		out.width+=4;
+		out.height+=4;
+		return out;
 	},
 	_getEachPoly : function(){
 		var poly = {
